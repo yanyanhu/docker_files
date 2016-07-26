@@ -1,6 +1,6 @@
 FROM ppc64le/ubuntu
 
-MAINTAINER "Yanyan Hu<yanyanhu@cn.ibm.com>"
+MAINTAINER "Yanyan Hu <yanyanhu@cn.ibm.com>"
 
 RUN echo "building etcd based on ubuntu ppc64le..."
 

@@ -1,0 +1,51 @@
+#
+# Dockerfile for building Mesos from sources
+#
+# This file is borrowed from YuBo's dockerfile
+# for mesos building. Just remove GPU part.
+
+#FROM ubuntu:14.04
+FROM ppc64le/ubuntu
+MAINTAINER Yanyan Hu <yanyanhu@cn.ibm.com>
+
+ENV WORK_DIR /mesos
+WORKDIR ${WORK_DIR}
+
+# Mesos branch used
+ARG MESOS_VERSION=master
+
+# Install mesos build dependencies
+RUN apt-get update
+RUN apt-get install -y curl openjdk-8-jdk autoconf libtool python-setuptools libssl-dev \
+    libelf-dev build-essential python-dev python-boto python-pip libcurl4-nss-dev libevent-dev \
+    libsasl2-dev maven libapr1-dev libsvn-dev zlib1g-dev libgflags-dev wget git
+RUN apt-get clean
+
+RUN git clone https://github.com/apache/mesos.git
+RUN cd mesos && git checkout ${MESOS_VERSION}
+
+# Build mesos
+RUN cd mesos && ./bootstrap && \
+    mkdir build && cd build && ../configure --enable-libevent --enable-ssl && \
+    make install -j4 && \
+    ldconfig && \
+    cd $WORK_DIR/mesos/build/3rdparty/protobuf-* && make install && \
+    cd $WORK_DIR/mesos/build/3rdparty/glog-* && make install && \
+    cd $WORK_DIR/mesos/build/3rdparty/picojson-* && make install && \
+    cd $WORK_DIR/mesos/build/src/python/dist && \
+    pip install mesos.interface-*.whl && \
+    pip install mesos.scheduler-*.whl && \
+    pip install mesos.executor-*.whl && \
+    pip install mesos.native-*.whl && \
+    pip install mesos.cli-*.whl && \
+    pip install mesos-*.whl && \
+    cp -r $WORK_DIR/mesos/src/messages /usr/local/include && \
+    cp -r $WORK_DIR/mesos/build/src/messages /usr/local/include && \
+    mkdir /usr/local/lib/java && \
+    cp $WORK_DIR/mesos/build/src/java/target/mesos-*.jar /usr/local/lib/java && \
+    cd $WORK_DIR && rm -rf *
+
+ENV MESOS_NATIVE_LIBRARY /usr/local/lib/libmesos.so
+ENV MESOS_NATIVE_JAVA_LIBRARY /usr/local/lib/libmesos.so
+
+ENTRYPOINT ["mesos-master"]
