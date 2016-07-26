@@ -1,0 +1,10 @@
+FROM ppc64le/ubuntu
+
+MAINTAINER "Yanyan Hu<yanyanhu@cn.ibm.com>"
+
+RUN echo "building etcd based on ubuntu ppc64le..."
+
+RUN apt-get update
+RUN apt-get install -y etcd
+
+ENTRYPOINT ["/usr/bin/etcd"]
