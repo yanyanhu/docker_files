@@ -1,0 +1,10 @@
+#
+# Dockerfile for building Mesos agent
+#
+FROM mesos-master-ppc64:20160726
+MAINTAINER Yanyan Hu <yanyanhu@cn.ibm.com>
+
+# Do nothing.
+RUN echo "hello, marathon"
+
+ENTRYPOINT ["/usr/local/opt/marathon-13.0/bin/start"]
