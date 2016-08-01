@@ -1,7 +1,7 @@
 #
 # Dockerfile for building Mesos agent
 #
-FROM mesos-master-ppc64:20160726
+FROM mesos-master-ppc64le:20160726
 MAINTAINER Yanyan Hu <yanyanhu@cn.ibm.com>
 
 # Do nothing.
